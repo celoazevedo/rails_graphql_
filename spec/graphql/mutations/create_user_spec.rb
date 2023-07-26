@@ -4,6 +4,27 @@ module Mutations
   module Users
     RSpec.describe CreateUser, type: :request do
       describe '.resolve' do
+
+        def query
+          <<~GQL
+          mutation {
+            createUser(
+              name: "Test User"
+              authProvider: {
+               credentials: {
+                 email: "email@example.com"
+                 password: "123456"
+               }
+              }  
+            ) {
+                id
+                name
+                email
+               }
+            }
+          GQL
+        end
+        
         it 'creates a User' do
           expect(User.count).to eq(0)
           post '/graphql', params: {query: query}
@@ -11,27 +32,8 @@ module Mutations
         end
         
         it 'returns a user' do
-          def query
-            <<~GQL
-            mutation {
-              createUser(
-                name: "Test User"
-                authProvider: {
-                 credentials: {
-                   email: "email@example.com"
-                   password: "123456"
-                 }
-                }  
-              ) {
-                  id
-                  name
-                  email
-                 }
-              }
-            GQL
-          end
-          
           post '/graphql', params: { query: query }
+
           json = JSON.parse(response.body)
           data = json['data']['createUser']
           expect(data['name']).to eq('Test User')

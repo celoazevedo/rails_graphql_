@@ -4,6 +4,60 @@ module Mutations
   module Links
     RSpec.describe CreateLink, type: :request do
       describe '.resolve' do
+
+        def query
+          <<~GQL
+          mutation {
+            createLink(
+              url: "http://example.com"
+              description: "Some text"
+            ) {
+                id
+                url
+                description
+               }
+            }
+          GQL
+        end
+
+        def query_no_url
+          <<~GQL
+          mutation {
+            createLink(
+            input: {
+              url: ""
+              description: "test description"
+            }
+            ) {
+              link {
+                id
+                url
+                description
+                }
+              }
+            }
+          GQL
+        end
+
+        def query_no_url
+          <<~GQL
+          mutation {
+            createLink(
+            input: {
+              url: "http://example.com"
+              description: ""
+            }
+            ) {
+              link {
+                id
+                url
+                description
+                }
+              }
+            }
+          GQL
+        end
+
         it 'creates a link' do
           expect(Link.count).to eq(0)
           post '/graphql', params: {query: query}
@@ -11,22 +65,8 @@ module Mutations
         end
         
         it 'returns a link' do
-          def query
-            <<~GQL
-            mutation {
-              createLink(
-                url: "http://example.com"
-                description: "Some text"
-              ) {
-                  id
-                  url
-                  description
-                 }
-              }
-            GQL
-          end
-
           post '/graphql', params: { query: query }
+          
           json = JSON.parse(response.body)
           data = json['data']['createLink']
           expect(data['url']).to eq('http://example.com')
@@ -34,24 +74,6 @@ module Mutations
         end
 
         it 'returns an error with no url input' do
-          def query_no_url
-            <<~GQL
-            mutation {
-              createLink(
-              input: {
-                url: ""
-                description: "test description"
-              }
-              ) {
-                link {
-                  id
-                  url
-                  description
-                  }
-                }
-              }
-            GQL
-          end
           post '/graphql', params: { query: query_no_url }
           
           json = JSON.parse(response.body)
@@ -63,24 +85,6 @@ module Mutations
         end
 
         it 'returns an error with no description input' do
-          def query_no_url
-            <<~GQL
-            mutation {
-              createLink(
-              input: {
-                url: "http://example.com"
-                description: ""
-              }
-              ) {
-                link {
-                  id
-                  url
-                  description
-                  }
-                }
-              }
-            GQL
-          end
           post '/graphql', params: { query: query_no_url }
           
           json = JSON.parse(response.body)
