@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 module Mutations
@@ -24,7 +26,7 @@ module Mutations
             }
           GQL
         end
-        
+
         it 'creates a User' do
           expect(User.count).to eq(0)
           post '/graphql', params: {query: query}

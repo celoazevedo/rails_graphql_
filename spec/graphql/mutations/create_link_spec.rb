@@ -80,7 +80,6 @@ module Mutations
           expect(json).to be_a(Hash)
           expect(json['errors']).to be_an(Array)
           expect(json['errors'][0]['message']).to be_a(String)
-          debugger
           expect(json['errors'][0]['message']).to eq("Field 'createLink' is missing required arguments: description, url")
         end
 
