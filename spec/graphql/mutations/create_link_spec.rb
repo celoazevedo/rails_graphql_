@@ -4,7 +4,6 @@ module Mutations
   module Links
     RSpec.describe CreateLink, type: :request do
       describe '.resolve' do
-
         def query
           <<~GQL
           mutation {
@@ -15,6 +14,9 @@ module Mutations
                 id
                 url
                 description
+                postedBy {
+                  id
+                }
                }
             }
           GQL
@@ -33,6 +35,9 @@ module Mutations
                 id
                 url
                 description
+                postedBy {
+                  id
+                  }
                 }
               }
             }
@@ -52,6 +57,9 @@ module Mutations
                 id
                 url
                 description
+                postedBy {
+                  id
+                  }
                 }
               }
             }
@@ -59,6 +67,23 @@ module Mutations
         end
 
         it 'creates a link' do
+
+          # WIP -- Need a way to create a user and sign them in for all tests in this file
+
+          # def perform(args = {})
+          #   Mutations::SignInUser.new(object: nil, field: nil, context: { session: {} }).resolve(**args)
+          # end
+
+          # @user = User.find_or_create_by(name: 'Test User', email: 'user@example.com', password: 'abcdefgh')
+
+          # # Must sign in the user
+          # perform(
+          #   credentials: {
+          #     email: @user.email,
+          #     password: @user.password
+          #   }
+          # )
+
           expect(Link.count).to eq(0)
           post '/graphql', params: {query: query}
           expect(Link.count).to eq(1)
