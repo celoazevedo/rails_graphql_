@@ -39,7 +39,7 @@ module Mutations
           GQL
         end
 
-        def query_no_url
+        def query_no_description
           <<~GQL
           mutation {
             createLink(
@@ -84,7 +84,7 @@ module Mutations
         end
 
         it 'returns an error with no description input' do
-          post '/graphql', params: { query: query_no_url }
+          post '/graphql', params: { query: query_no_description }
           
           json = JSON.parse(response.body)
           expect(json).to be_a(Hash)
