@@ -1,9 +1,32 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 module Mutations
   module Users
     RSpec.describe CreateUser, type: :request do
       describe '.resolve' do
+
+        def query
+          <<~GQL
+          mutation {
+            createUser(
+              name: "Test User"
+              authProvider: {
+               credentials: {
+                 email: "email@example.com"
+                 password: "123456"
+               }
+              }  
+            ) {
+                id
+                name
+                email
+               }
+            }
+          GQL
+        end
+
         it 'creates a User' do
           expect(User.count).to eq(0)
           post '/graphql', params: {query: query}
@@ -12,11 +35,13 @@ module Mutations
         
         it 'returns a user' do
           post '/graphql', params: { query: query }
+
           json = JSON.parse(response.body)
           data = json['data']['createUser']
           expect(data['name']).to eq('Test User')
           expect(data['email']).to eq('email@example.com')
         end
+
         # it 'returns an error with no firstName input' do
         #   def query_nofirst
         #     <<~GQL
@@ -104,26 +129,6 @@ module Mutations
         #   expect(json['errors'][0]['message']).to eq("Cannot return null for non-nullable field CreateUserPayload.user")
         # end
       end
-
-      def query
-       <<~GQL
-       mutation {
-         createUser(
-           name: "Test User"
-           authProvider: {
-            credentials: {
-              email: "email@example.com"
-              password: "123456"
-            }
-           }  
-         ) {
-             id
-             name
-             email
-            }
-         }
-       GQL
-     end
     end
   end
 end
